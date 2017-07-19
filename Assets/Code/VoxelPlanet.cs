@@ -21,14 +21,21 @@ namespace UnityVoxelPlanet
         public int InitialOctreeSize = 8;
 
         // private
-        private Octree<VoxelPlanetChunk, VoxelPlanet> _octree;
+        private BoundsOctree<VoxelPlanetChunk, VoxelPlanet> _octree;
 
         // override `OnInit`
         protected override void OnInit()
         {
             Position = MyTransform.position;
 
-            _octree = new Octree<VoxelPlanetChunk, VoxelPlanet>();
+            var nodeSize = Radius / InitialOctreeSize;
+
+            _octree = new BoundsOctree<VoxelPlanetChunk, VoxelPlanet>
+            {
+                Position = Position,
+                BaseNodeSize = new Vector3(nodeSize, nodeSize, nodeSize)
+            };
+
             _octree.Init(InitialOctreeSize, this);
         }
 

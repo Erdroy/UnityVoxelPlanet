@@ -228,9 +228,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Code\CameraController.cs" />
-    <Compile Include="Assets\Code\IOctreeNode.cs" />
-    <Compile Include="Assets\Code\Octree.cs" />
-    <Compile Include="Assets\Code\OctreeNode.cs" />
+    <Compile Include="Assets\Code\IBoundsOctreeNode.cs" />
+    <Compile Include="Assets\Code\BoundsOctree.cs" />
+    <Compile Include="Assets\Code\BoundsOctreeNode.cs" />
     <Compile Include="Assets\Code\VoxelManager.cs" />
     <Compile Include="Assets\Code\VoxelPlanet.cs" />
     <Compile Include="Assets\Code\VoxelPlanetChunk.cs" />

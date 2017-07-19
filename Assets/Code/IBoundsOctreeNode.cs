@@ -1,7 +1,7 @@
 ﻿
 namespace UnityVoxelPlanet
 {
-    public interface IOctreeNode
+    public interface IBoundsOctreeNode
     {
 
     }

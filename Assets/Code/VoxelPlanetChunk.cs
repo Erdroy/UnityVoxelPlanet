@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityVoxelPlanet
 {
-    public class VoxelPlanetChunk : OctreeNode<VoxelPlanetChunk, VoxelPlanet>, IOctreeNode
+    public class VoxelPlanetChunk : BoundsOctreeNode<VoxelPlanetChunk, VoxelPlanet>, IBoundsOctreeNode
     {
         public override void OnCreate()
         {

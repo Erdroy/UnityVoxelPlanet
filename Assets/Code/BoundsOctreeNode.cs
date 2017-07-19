@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityVoxelPlanet
 {
-    public abstract class OctreeNode<T, TH> where T : OctreeNode<T, TH>, IOctreeNode
+    public abstract class BoundsOctreeNode<T, TH> where T : BoundsOctreeNode<T, TH>, IBoundsOctreeNode
     {
         public abstract void OnCreate();
 
@@ -38,7 +38,7 @@ namespace UnityVoxelPlanet
             Gizmos.DrawWireCube(Bounds.center, Bounds.size);
         }
 
-        public static implicit operator bool(OctreeNode<T, TH> obj)
+        public static implicit operator bool(BoundsOctreeNode<T, TH> obj)
         {
             return obj != null;
         }
