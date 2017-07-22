@@ -13,6 +13,7 @@ namespace UnityVoxelPlanet
         /// </summary>
         public VoxelPlanet[] VoxelPlanets;
 
+        // private
         private void Start()
         {
             Instance = this;
@@ -20,11 +21,13 @@ namespace UnityVoxelPlanet
             VoxelProcessor.Start();
         }
 
+        // private
         private void Update()
         {
             VoxelProcessor.Dispatch();
         }
 
+        // private
         private void OnDestroy()
         {
             VoxelProcessor.Shutdown();

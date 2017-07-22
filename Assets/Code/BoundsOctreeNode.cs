@@ -5,6 +5,11 @@ namespace UnityVoxelPlanet
 {
     public abstract class BoundsOctreeNode<T, TH> where T : BoundsOctreeNode<T, TH>, IBoundsOctreeNode
     {
+        /// <summary>
+        /// Node children count.
+        /// </summary>
+        public const int NodeChildCount = 8;
+
         public abstract void OnCreate();
 
         public abstract void OnDestroy();
@@ -15,17 +20,29 @@ namespace UnityVoxelPlanet
 
         public void Populate()
         {
+            if (IsPopulated)
+            {
+                Debug.LogWarning("Cannot populate! Node is already populated or not cleaned properly.");
+                return;
+            }
+
             // TODO: calculate positions
+
         }
 
         public void Depopulate()
         {
-            
+            if (!IsPopulated)
+            {
+                Debug.LogWarning("Cannot depopulate! Node is not populated.");
+                return;
+            }
+
         }
 
         public void DrawDebug()
         {
-            if (ChildNodes != null)
+            if (IsPopulated)
             {
                 foreach (var child in ChildNodes)
                 {
@@ -41,6 +58,11 @@ namespace UnityVoxelPlanet
         public static implicit operator bool(BoundsOctreeNode<T, TH> obj)
         {
             return obj != null;
+        }
+
+        public bool IsPopulated
+        {
+            get { return ChildNodes != null && ChildNodes.Length > 0; }
         }
 
         public TH Handler { get; set; }

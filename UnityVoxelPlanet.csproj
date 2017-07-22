@@ -231,10 +231,14 @@
     <Compile Include="Assets\Code\IBoundsOctreeNode.cs" />
     <Compile Include="Assets\Code\BoundsOctree.cs" />
     <Compile Include="Assets\Code\BoundsOctreeNode.cs" />
+    <Compile Include="Assets\Code\IVoxelMesher.cs" />
     <Compile Include="Assets\Code\VoxelManager.cs" />
     <Compile Include="Assets\Code\VoxelPlanet.cs" />
     <Compile Include="Assets\Code\VoxelPlanetChunk.cs" />
     <Compile Include="Assets\Code\VoxelProcessor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Code\Meshers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

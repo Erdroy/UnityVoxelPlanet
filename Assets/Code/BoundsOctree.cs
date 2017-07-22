@@ -13,7 +13,6 @@ namespace UnityVoxelPlanet
             _childNodes = new T[initialChildCount * initialChildCount * initialChildCount];
 
             var idx = 0;
-
             for (var y = 0; y < initialChildCount; y++)
             {
                 for (var x = 0; x < initialChildCount; x++)
@@ -47,12 +46,13 @@ namespace UnityVoxelPlanet
                 }
             }
 
-            Debug.Log("Chunk count: " + _childNodes.Length);
+            Debug.Log("Octree nodes created");
         }
 
         public void Destroy()
         {
             // TODO: kill all nodes
+            Debug.Log("Octree nodes destroyed");
         }
 
         public T[] GetChildNodes()

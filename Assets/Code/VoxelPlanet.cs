@@ -22,8 +22,10 @@ namespace UnityVoxelPlanet
 
         // private
         private BoundsOctree<VoxelPlanetChunk, VoxelPlanet> _octree;
-
-        // override `OnInit`
+        
+        /// <summary>
+        /// Called when this component is initialized.
+        /// </summary>
         protected override void OnInit()
         {
             Position = MyTransform.position;
@@ -39,7 +41,9 @@ namespace UnityVoxelPlanet
             _octree.Init(InitialOctreeSize, this);
         }
 
-        // override `OnTick`
+        /// <summary>
+        /// Called when this component is updated.
+        /// </summary>
         protected override void OnTick()
         {
             if (CameraController.Current == null)
