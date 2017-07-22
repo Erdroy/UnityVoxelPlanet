@@ -1,6 +1,7 @@
 ﻿
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityVoxelPlanet
 {
@@ -18,23 +19,16 @@ namespace UnityVoxelPlanet
         private VoxelMesh _voxelMesh;
         private float _voxelSize;
         private GameObject _chunkObject;
+        private bool _hasBlocks;
+
+        private static bool _populated = false;
 
         /// <summary>
         /// Called when this chunk is created.
         /// </summary>
         public override void OnCreate()
         {
-            if(_voxelMesh == null)
-                _voxelMesh = new VoxelMesh();
-
-            VoxelProcessor.Enqueue(Generate, OnGenerated);
-
-            // calculate voxel size
-            _voxelSize = Bounds.size.x / Size;
-
-            _chunkObject = new GameObject("<chunk>");
-            _chunkObject.transform.parent = Handler.transform;
-            _chunkObject.transform.position = Position;
+            CreateMesh();
         }
 
         /// <summary>
@@ -50,7 +44,14 @@ namespace UnityVoxelPlanet
         /// </summary>
         public override void OnPopulated()
         {
-            // TODO: unload mesh if any
+            // TODO: call when the populating is finished (all chunks have been generated)
+
+            /*if (_chunkObject)
+            {
+                Object.Destroy(_chunkObject);
+            }
+
+            _voxelMesh.Dispose();*/
         }
 
         /// <summary>
@@ -59,8 +60,7 @@ namespace UnityVoxelPlanet
         public override void OnDepopulated()
         {
             // all child nodes deleted
-
-            // TODO: create mesh
+            CreateMesh();
         }
         
         /// <summary>
@@ -69,6 +69,9 @@ namespace UnityVoxelPlanet
         /// <returns>The color.</returns>
         public override Color GetDebugColor()
         {
+            if (!_hasBlocks)
+                return new Color(0.0f, 0.0f, 0.0f, 0.0f);
+
             if (Voxels != null && Voxels.Length > 0)
             {
                 return Color.green;
@@ -82,6 +85,9 @@ namespace UnityVoxelPlanet
         /// <param name="cameraPosition"></param>
         public void Update(Vector3 cameraPosition)
         {
+            if (!_hasBlocks)
+                return;
+
             if (IsPopulated)
             {
                 // forward to children
@@ -92,7 +98,7 @@ namespace UnityVoxelPlanet
             }
 
             // call OnUpdate
-            OnUpdate(Vector3.Distance(cameraPosition, Position));
+            OnUpdate(cameraPosition);
         }
 
         /// <summary>
@@ -164,11 +170,52 @@ namespace UnityVoxelPlanet
         }
 
         // private
-        private void OnUpdate(float distance)
+        private void CreateMesh()
+        {
+            if (_voxelMesh == null)
+                _voxelMesh = new VoxelMesh();
+
+            VoxelProcessor.Enqueue(Generate, OnGenerated);
+
+            // calculate voxel size
+            _voxelSize = Bounds.size.x / Size;
+
+            _chunkObject = new GameObject("<chunk>");
+            _chunkObject.transform.parent = Handler.transform;
+            _chunkObject.transform.position = Position;
+        }
+
+        // private
+        private void OnUpdate(Vector3 cameraPosition)
         {
             // check if we need to populate or depopulate
 
             // TODO: manage populate/depopulate
+
+            // get proper distance to the camera
+            var boundsPoint = Bounds.ClosestPoint(cameraPosition);
+            var distance = Vector3.Distance(boundsPoint, cameraPosition);
+
+            var camDistCtr = Vector3.Distance(Handler.Position, cameraPosition);
+            var bndDistCtr = Vector3.Distance(Handler.Position, Bounds.center);
+
+            if (_hasBlocks)
+            {
+                if (Input.GetKeyDown(KeyCode.Q) && !_populated)
+                {
+                    _populated = true;
+                    Populate();
+                }
+            }
+
+            /* if (!IsPopulated)
+             {
+                 // try populate
+                 if (distance < (Bounds.size.x * 2.0f) && bndDistCtr > camDistCtr)
+                 {
+                     Populate();
+                 }
+             }*/
         }
 
         // private
@@ -194,7 +241,7 @@ namespace UnityVoxelPlanet
                 Voxels = new byte[Size * Size * Size];
 
                 // generate voxels
-                VoxelGenerator.GenerateTempVoxels(Handler, this);
+                _hasBlocks = VoxelGenerator.GenerateTempVoxels(Handler, this);
 
                 // create mesh
                 VoxelMesher.Current.CreateMesh(this, NeighborChunks);

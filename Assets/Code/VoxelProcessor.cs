@@ -19,7 +19,7 @@ namespace UnityVoxelPlanet
         }
 
         private static Thread[] _workerThreads;
-        private static bool _isRunning;
+        private static volatile bool _isRunning;
 
         private static readonly Queue<QueueEntry> ChunkProcessQueue = new Queue<QueueEntry>();
         private static readonly Queue<Action> OnDone = new Queue<Action>();
@@ -83,10 +83,11 @@ namespace UnityVoxelPlanet
         {
             _isRunning = false;
 
-            foreach (var thread in _workerThreads)
+            /*foreach (var thread in _workerThreads)
             {
-                thread.Abort();
-            }
+                thread.Interrupt();
+            }*/
+            _workerThreads = null;
 
             Debug.Log("Shutdown all worker threads.");
         }

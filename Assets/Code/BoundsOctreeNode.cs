@@ -1,10 +1,11 @@
 ﻿
 using System;
+using MyHalp.MyMath;
 using UnityEngine;
 
 namespace UnityVoxelPlanet
 {
-    public abstract class BoundsOctreeNode<T, TH> where T : BoundsOctreeNode<T, TH>, IBoundsOctreeNode
+    public abstract class BoundsOctreeNode<T, TH> where T : BoundsOctreeNode<T, TH>, IBoundsOctreeNode, new()
     {
         /// <summary>
         /// Node children count.
@@ -28,8 +29,46 @@ namespace UnityVoxelPlanet
                 Debug.LogWarning("Cannot populate! Node is already populated or not cleaned properly.");
                 return;
             }
-            
-            throw new NotImplementedException();
+            /*
+                        ChildNodes = new T[NodeChildCount];
+
+                         var size = Bounds.size * 0.5f;
+
+                         for (var y = 0; y < 2; y++)
+                         {
+                             for (var x = 0; x < 2; x++)
+                             {
+                                 for (var z = 0; z < 2; z++)
+                                 {
+                                     var idx = z * 2 * 2 + y * 2 + x;
+
+                                     ChildNodes[idx] = new T
+                                     {
+                                         Handler = Handler,
+                                         ParentNode = null
+                                     };
+
+                                     var node = ChildNodes[idx];
+                                     node.Level = Level + 1;
+
+                                     var position = new MyVector3(x - 1, y - 1, z - 1);
+
+                                     position *= size;
+                                     position += (MyVector3)Position;
+
+                                     node.Position = position;
+                                     node.Bounds = new Bounds
+                                     {
+                                         min = position,
+                                         max = new Vector3(position.X + size.x, position.Y + size.y, position.Z + size.z)
+                                     };
+
+                                     node.OnCreate();
+                                 }
+                             }
+                         }
+                         */
+            OnPopulated();
         }
 
         public void Depopulate()

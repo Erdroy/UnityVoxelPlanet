@@ -297,7 +297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MyTransform: {fileID: 0}
   Sensitivity: 2.5
-  InitialAltitude: 1000
+  InitialAltitude: 5000
   SpeedCurve:
     serializedVersion: 2
     m_Curve:

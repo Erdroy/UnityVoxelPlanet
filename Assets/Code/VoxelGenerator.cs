@@ -10,7 +10,7 @@ namespace UnityVoxelPlanet
         /// </summary>
         /// <param name="planet">The planet instance.</param>
         /// <param name="chunk">The planet chunk instance.</param>
-        public static void GenerateTempVoxels(VoxelPlanet planet, VoxelPlanetChunk chunk)
+        public static bool GenerateTempVoxels(VoxelPlanet planet, VoxelPlanetChunk chunk)
         {
             const int width = VoxelPlanetChunk.Size;
 
@@ -19,6 +19,8 @@ namespace UnityVoxelPlanet
             var chunkPosition = chunk.Position;
 
             var voxelSize = chunk.GetVoxelSize();
+
+            var hasBlock = false;
 
             for (var y = 0; y < width; y++)
             {
@@ -34,6 +36,7 @@ namespace UnityVoxelPlanet
                         // if block is placed higher than planet radius then it is 0 (air), else the voxel is 1 (block, something)
                         if (distanceToCenter <= planetRadius)
                         {
+                            hasBlock = true;
                             chunk.Voxels[idx] = 1;
                         }
                         else
@@ -43,6 +46,8 @@ namespace UnityVoxelPlanet
                     }
                 }
             }
+
+            return hasBlock;
         }
     }
 }

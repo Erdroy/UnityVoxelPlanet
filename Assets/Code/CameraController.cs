@@ -12,7 +12,7 @@ namespace UnityVoxelPlanet
     {
         public float Sensitivity = 2.5f;
 
-        public float InitialAltitude = 1000.0f;
+        public float InitialAltitude = 5000.0f;
 
         public AnimationCurve SpeedCurve;
 
