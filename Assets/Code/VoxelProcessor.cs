@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace UnityVoxelPlanet
 {
@@ -86,6 +87,8 @@ namespace UnityVoxelPlanet
             {
                 thread.Abort();
             }
+
+            Debug.Log("Shutdown all worker threads.");
         }
 
         // private

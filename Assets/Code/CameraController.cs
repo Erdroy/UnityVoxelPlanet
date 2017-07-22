@@ -16,39 +16,82 @@ namespace UnityVoxelPlanet
 
         public AnimationCurve SpeedCurve;
 
+        public Transform Camera;
+
+        public float MinimumX = -360F;
+        public float MaximumX = 360F;
+
+        public float MinimumY = -60F;
+        public float MaximumY = 60F;
+
+        private float _rotationX;
+        private float _rotationY;
+
+        private Quaternion _initialQ;
+        
+        public CameraController()
+        {
+            _rotationY = 0F;
+        }
+
         // override `OnInit`
         protected override void OnInit()
         {
             // set current camera instance
             Current = this;
+
+            _initialQ = Camera.localRotation;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         // override `OnTick`
         protected override void OnTick()
         {
+            UpdateMovement();
+            UpdateLook();
+        }
+
+        // private
+        private void UpdateLook()
+        {
+            // Read the mouse input axis
+            _rotationX += Input.GetAxis("Mouse X") * Sensitivity;
+            _rotationY += Input.GetAxis("Mouse Y") * Sensitivity;
+
+            var xQuaternion = Quaternion.AngleAxis(_rotationX, Vector3.up);
+            var yQuaternion = Quaternion.AngleAxis(_rotationY, -Vector3.right);
+
+            Camera.localRotation = _initialQ * xQuaternion * yQuaternion;
+        }
+
+        // private
+        private void UpdateMovement()
+        {  
             // go to desired altitude when camera is too low
             if (VoxelManager.Instance && GetAltitude() <= float.Epsilon)
                 ToAltitude(InitialAltitude);
-            
-            transform.up = GetNormal();
 
             var axisH = Input.GetAxisRaw("Horizontal");
             var axisV = Input.GetAxisRaw("Vertical");
+
+            transform.up = GetNormal();
 
             var dir = Vector3.zero;
 
             dir += transform.forward * axisV;
             dir += transform.right * axisH;
-            
+
             if (Input.GetKey(KeyCode.Space))
-                dir += transform.up;
+                dir += GetNormal();
 
             if (Input.GetKey(KeyCode.LeftControl))
-                dir -= transform.up;
+                dir -= GetNormal();
 
             dir.Normalize();
 
-            var speed = SpeedCurve.Evaluate(GetAltitude());
+            var speed = SpeedCurve.Evaluate(GetAltitude()) * 10.0f;
 
             if (Input.GetKey(KeyCode.LeftShift))
                 speed *= 2;
@@ -106,6 +149,15 @@ namespace UnityVoxelPlanet
             var planet = GetOrbitingPlanet();
             var normal = GetNormal();
             transform.position = planet.Position + normal * (planet.Radius + altitude);
+        }
+        
+        public static float ClampAngle(float angle, float min, float max)
+        {
+            if (angle < -360F)
+                angle += 360F;
+            if (angle > 360F)
+                angle -= 360F;
+            return Mathf.Clamp(angle, min, max);
         }
 
         public static CameraController Current { get; private set; }

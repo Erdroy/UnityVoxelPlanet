@@ -17,7 +17,6 @@ namespace UnityVoxelPlanet
         private void Start()
         {
             Instance = this;
-
             VoxelProcessor.Start();
         }
 
