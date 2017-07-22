@@ -34,7 +34,7 @@ namespace UnityVoxelPlanet
         {
             Position = MyTransform.position;
 
-            var nodeSize = Radius / InitialOctreeSize;
+            var nodeSize = Radius * 2.0f / InitialOctreeSize;
 
             _octree = new BoundsOctree<VoxelPlanetChunk, VoxelPlanet>
             {

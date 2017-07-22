@@ -48,9 +48,8 @@ namespace UnityVoxelPlanet
                 return;
 
             _mesh.SetVertices(Positions);
-            _mesh.SetTriangles(Triangles, 0);
-
-            _mesh.RecalculateBounds();
+            _mesh.SetTriangles(Triangles, 0, true);
+            
             _mesh.RecalculateNormals();
 
             _mesh.UploadMeshData(true);

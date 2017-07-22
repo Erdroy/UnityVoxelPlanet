@@ -80,7 +80,6 @@ namespace UnityVoxelPlanet.Meshers
                 indices.Add(idx + 2);
                 indices.Add(idx + 0);
             }
-
         }
     }
 }

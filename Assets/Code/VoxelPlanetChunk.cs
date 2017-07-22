@@ -115,7 +115,7 @@ namespace UnityVoxelPlanet
             {
                 // try to get voxel from neigh
 
-                // left/right
+               /* // left/right
                 if (x >= Size && NeighborChunks[(int)BoundsOctreeNeighbor.Right] != null)
                     return NeighborChunks[(int)BoundsOctreeNeighbor.Right].GetVoxelUnsafe(x - Size, y, z);
 
@@ -137,7 +137,7 @@ namespace UnityVoxelPlanet
                     return NeighborChunks[(int)BoundsOctreeNeighbor.Back].GetVoxelUnsafe(x, y, z + Size);
 
                 Debug.Log("invalid neighbor");
-
+                */
                 // invalid neighbor
                 return 0;
             }

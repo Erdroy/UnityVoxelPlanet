@@ -71,7 +71,7 @@ namespace UnityVoxelPlanet
 
         public VoxelPlanet GetOrbitingPlanet()
         {
-            // TODO: implement planet finding
+            // TODO: implement planet finding (check which is closest - including the gravity affect, if there is none, use world up axis)
 
             return VoxelManager.Instance.VoxelPlanets[0];
         }
