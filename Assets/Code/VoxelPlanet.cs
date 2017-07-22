@@ -20,6 +20,10 @@ namespace UnityVoxelPlanet
         /// </summary>
         public int InitialOctreeSize = 8;
 
+        public Material DefaultMaterial;
+
+        public bool DrawDebug = true;
+
         // private
         private BoundsOctree<VoxelPlanetChunk, VoxelPlanet> _octree;
         
@@ -64,7 +68,7 @@ namespace UnityVoxelPlanet
         // private
         private void OnDrawGizmos()
         {
-            if (!Application.isPlaying)
+            if (!Application.isPlaying || !DrawDebug)
                 return;
 
             _octree.DrawDebug();

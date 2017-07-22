@@ -50,9 +50,10 @@ namespace UnityVoxelPlanet
         {
             lock (OnDone)
             {
-                foreach (var done in OnDone)
+                while (OnDone.Count > 0)
                 {
-                    done();
+                    var action = OnDone.Dequeue();
+                    action();
                 }
             }
         }

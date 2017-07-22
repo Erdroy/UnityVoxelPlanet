@@ -376,6 +376,8 @@ MonoBehaviour:
   MyTransform: {fileID: 0}
   Radius: 8192
   InitialOctreeSize: 8
+  DefaultMaterial: {fileID: 2100000, guid: ae3bffd62197b8b46a551a19c97e72db, type: 2}
+  DrawDebug: 1
 --- !u!1 &1769699473
 GameObject:
   m_ObjectHideFlags: 0

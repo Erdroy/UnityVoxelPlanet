@@ -55,6 +55,14 @@ namespace UnityVoxelPlanet
 
             _mesh.UploadMeshData(true);
         }
+
+        /// <summary>
+        /// Gets the Unity Mesh.
+        /// </summary>
+        public Mesh GetMesh()
+        {
+            return _mesh;
+        }
         
         /// <summary>
         /// Disposes the VoxelMesh.

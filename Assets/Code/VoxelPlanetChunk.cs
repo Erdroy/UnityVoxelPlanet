@@ -1,4 +1,5 @@
 ﻿
+using System;
 using UnityEngine;
 
 namespace UnityVoxelPlanet
@@ -16,6 +17,7 @@ namespace UnityVoxelPlanet
         // private
         private VoxelMesh _voxelMesh;
         private float _voxelSize;
+        private GameObject _chunkObject;
 
         /// <summary>
         /// Called when this chunk is created.
@@ -25,10 +27,14 @@ namespace UnityVoxelPlanet
             if(_voxelMesh == null)
                 _voxelMesh = new VoxelMesh();
 
-            VoxelProcessor.Enqueue(Generate, UploadMesh);
+            VoxelProcessor.Enqueue(Generate, OnGenerated);
 
             // calculate voxel size
             _voxelSize = Bounds.size.x / Size;
+
+            _chunkObject = new GameObject("<chunk>");
+            _chunkObject.transform.parent = Handler.transform;
+            _chunkObject.transform.position = Position;
         }
 
         /// <summary>
@@ -90,6 +96,56 @@ namespace UnityVoxelPlanet
         }
 
         /// <summary>
+        /// Gets the voxel at given coord.
+        /// </summary>
+        public byte GetVoxelUnsafe(int x, int y, int z)
+        {
+            if (Voxels == null)
+                return 0;
+
+            return Voxels[z * Size * Size + y * Size + x];
+        }
+
+        /// <summary>
+        /// Gets the voxel at given coord, including neighbor chunks (only side by side).
+        /// </summary>
+        public byte GetVoxel(int x, int y, int z)
+        {
+            if (x < 0 || y < 0 || z < 0 || x >= Size || y >= Size || z >= Size)
+            {
+                // try to get voxel from neigh
+
+                // left/right
+                if (x >= Size && NeighborChunks[(int)BoundsOctreeNeighbor.Right] != null)
+                    return NeighborChunks[(int)BoundsOctreeNeighbor.Right].GetVoxelUnsafe(x - Size, y, z);
+
+                if (x < 0 && NeighborChunks[(int)BoundsOctreeNeighbor.Left] != null)
+                    return NeighborChunks[(int)BoundsOctreeNeighbor.Left].GetVoxelUnsafe(x + Size, y, z);
+
+                // top/bottom
+                if (y >= Size && NeighborChunks[(int)BoundsOctreeNeighbor.Top] != null)
+                    return NeighborChunks[(int)BoundsOctreeNeighbor.Top].GetVoxelUnsafe(x, y - Size, z);
+
+                if (y < 0 && NeighborChunks[(int)BoundsOctreeNeighbor.Bottom] != null)
+                    return NeighborChunks[(int)BoundsOctreeNeighbor.Bottom].GetVoxelUnsafe(x, y + Size, z);
+
+                // front/back
+                if (z >= Size && NeighborChunks[(int)BoundsOctreeNeighbor.Front] != null)
+                    return NeighborChunks[(int)BoundsOctreeNeighbor.Front].GetVoxelUnsafe(x, y, z - Size);
+
+                if (z < 0 && NeighborChunks[(int)BoundsOctreeNeighbor.Back] != null)
+                    return NeighborChunks[(int)BoundsOctreeNeighbor.Back].GetVoxelUnsafe(x, y, z + Size);
+
+                Debug.Log("invalid neighbor");
+
+                // invalid neighbor
+                return 0;
+            }
+
+            return GetVoxelUnsafe(x, y, z);
+        }
+
+        /// <summary>
         /// Gets voxel block size.
         /// </summary>
         /// <returns>The voxel block size.</returns>
@@ -116,22 +172,37 @@ namespace UnityVoxelPlanet
         }
 
         // private
-        private void UploadMesh()
+        private void OnGenerated()
         {
             // upload mesh
             _voxelMesh.Upload();
+
+            var mesh = _voxelMesh.GetMesh();
+
+            var mf = _chunkObject.AddComponent<MeshFilter>();
+            mf.sharedMesh = mesh;
+
+            var mr = _chunkObject.AddComponent<MeshRenderer>();
+            mr.material = Handler.DefaultMaterial;
         }
 
         // private
         private void Generate()
         {
-            Voxels = new byte[Size * Size * Size];
+            try
+            {
+                Voxels = new byte[Size * Size * Size];
 
-            // generate voxels
-            VoxelGenerator.GenerateTempVoxels(Handler, this);
+                // generate voxels
+                VoxelGenerator.GenerateTempVoxels(Handler, this);
 
-            // create mesh
-            VoxelMesher.Current.CreateMesh(this, NeighborChunks);
+                // create mesh
+                VoxelMesher.Current.CreateMesh(this, NeighborChunks);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex);
+            }
         }
 
         /// <summary>
