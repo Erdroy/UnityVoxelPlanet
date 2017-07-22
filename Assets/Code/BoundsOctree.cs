@@ -82,10 +82,15 @@ namespace UnityVoxelPlanet
 
         public T GetBaseChunk(int x, int y, int z)
         {
-            if (x < 0 || y < 0 || z < 0 || x > _baseSize || y > _baseSize || z > _baseSize)
+            if (x < 0 || y < 0 || z < 0 || x >= _baseSize || y >= _baseSize || z >= _baseSize)
                 return null;
-            
-            return _childNodes[z * _baseSize * _baseSize + y * _baseSize + x];
+
+            var idx = z * _baseSize * _baseSize + y * _baseSize + x;
+
+            if (idx >= _childNodes.Length)
+                return null;
+
+            return _childNodes[idx];
         }
 
         public void Destroy()

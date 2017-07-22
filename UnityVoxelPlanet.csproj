@@ -13,13 +13,11 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
-    <UnityVersion>2017.2.0b3</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <UnityVersion>2017.2.0b4</UnityVersion>
+    <RootNamespace></RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -231,16 +229,15 @@
     <Compile Include="Assets\Code\BoundsOctreeNode.cs" />
     <Compile Include="Assets\Code\CameraController.cs" />
     <Compile Include="Assets\Code\IBoundsOctreeNode.cs" />
-    <Compile Include="Assets\Code\VoxelMesher.cs" />
     <Compile Include="Assets\Code\Meshers\VoxelMesherDefault.cs" />
     <Compile Include="Assets\Code\VoxelGenerator.cs" />
     <Compile Include="Assets\Code\VoxelManager.cs" />
     <Compile Include="Assets\Code\VoxelMesh.cs" />
+    <Compile Include="Assets\Code\VoxelMesher.cs" />
     <Compile Include="Assets\Code\VoxelPlanet.cs" />
     <Compile Include="Assets\Code\VoxelPlanetChunk.cs" />
     <Compile Include="Assets\Code\VoxelProcessor.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>

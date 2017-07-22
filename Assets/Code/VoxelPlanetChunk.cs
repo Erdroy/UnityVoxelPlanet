@@ -125,17 +125,13 @@ namespace UnityVoxelPlanet
         // private
         private void Generate()
         {
-            if (Voxels == null)
-            {
-                Voxels = new byte[Size * Size * Size];
-            }
+            Voxels = new byte[Size * Size * Size];
 
             // generate voxels
             VoxelGenerator.GenerateTempVoxels(Handler, this);
 
             // create mesh
             VoxelMesher.Current.CreateMesh(this, NeighborChunks);
-            
         }
 
         /// <summary>
