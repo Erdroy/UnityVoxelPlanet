@@ -4,21 +4,34 @@ using UnityEngine;
 
 namespace UnityVoxelPlanet
 {
+    public enum BoundsOctreeNeighbor
+    {
+        Top = 0,
+        Bottom = 1,
+        Left = 2,
+        Right = 3,
+        Front = 4,
+        Back = 5
+    }
+
     public class BoundsOctree<T, TH> where T : BoundsOctreeNode<T, TH>, IBoundsOctreeNode, new()
     {
         private T[] _childNodes;
+        private int _baseSize;
 
         public void Init(int initialChildCount, TH owner)
         {
+            _baseSize = initialChildCount;
             _childNodes = new T[initialChildCount * initialChildCount * initialChildCount];
-
-            var idx = 0;
+            
             for (var y = 0; y < initialChildCount; y++)
             {
                 for (var x = 0; x < initialChildCount; x++)
                 {
                     for (var z = 0; z < initialChildCount; z++)
                     {
+                        var idx = z * initialChildCount * initialChildCount + y * initialChildCount + x;
+
                         _childNodes[idx] = new T
                         {
                             Level = 0,
@@ -40,13 +53,39 @@ namespace UnityVoxelPlanet
                         };
 
                         node.OnCreate();
+                    }
+                }
+            }
 
-                        idx++;
+            // build neighbors
+            for (var y = 0; y < initialChildCount; y++)
+            {
+                for (var x = 0; x < initialChildCount; x++)
+                {
+                    for (var z = 0; z < initialChildCount; z++)
+                    {
+                        var chunk = GetBaseChunk(x, y, z);
+                        chunk.NeighborChunks = new T[6];
+
+                        chunk.NeighborChunks[(int)BoundsOctreeNeighbor.Top] = GetBaseChunk(x, y + 1, z);
+                        chunk.NeighborChunks[(int)BoundsOctreeNeighbor.Bottom] = GetBaseChunk(x, y - 1, z);
+                        chunk.NeighborChunks[(int)BoundsOctreeNeighbor.Left] = GetBaseChunk(x - 1, y, z);
+                        chunk.NeighborChunks[(int)BoundsOctreeNeighbor.Right] = GetBaseChunk(x + 1, y, z);
+                        chunk.NeighborChunks[(int)BoundsOctreeNeighbor.Front] = GetBaseChunk(x, y, z + 1);
+                        chunk.NeighborChunks[(int)BoundsOctreeNeighbor.Back] = GetBaseChunk(x, y, z - 1);
                     }
                 }
             }
 
             Debug.Log("Octree nodes created");
+        }
+
+        public T GetBaseChunk(int x, int y, int z)
+        {
+            if (x < 0 || y < 0 || z < 0 || x > _baseSize || y > _baseSize || z > _baseSize)
+                return null;
+            
+            return _childNodes[z * _baseSize * _baseSize + y * _baseSize + x];
         }
 
         public void Destroy()
@@ -62,7 +101,6 @@ namespace UnityVoxelPlanet
 
         public void DrawDebug()
         {
-            Gizmos.color = new Color(1.0f, 1.0f, 0.5f, 0.6f);
             foreach (var child in _childNodes)
             {
                 child.DrawDebug();

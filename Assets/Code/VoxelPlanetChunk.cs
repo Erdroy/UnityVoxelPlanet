@@ -15,18 +15,20 @@ namespace UnityVoxelPlanet
 
         // private
         private VoxelMesh _voxelMesh;
+        private float _voxelSize;
 
         /// <summary>
         /// Called when this chunk is created.
         /// </summary>
         public override void OnCreate()
         {
-            Voxels = new byte[Size * Size * Size];
-            
             if(_voxelMesh == null)
                 _voxelMesh = new VoxelMesh();
 
             VoxelProcessor.Enqueue(Generate, UploadMesh);
+
+            // calculate voxel size
+            _voxelSize = Bounds.size.x / Size;
         }
 
         /// <summary>
@@ -54,6 +56,19 @@ namespace UnityVoxelPlanet
 
             // TODO: create mesh
         }
+        
+        /// <summary>
+        /// Gets octree node debug color.
+        /// </summary>
+        /// <returns>The color.</returns>
+        public override Color GetDebugColor()
+        {
+            if (Voxels != null && Voxels.Length > 0)
+            {
+                return Color.green;
+            }
+            return Color.cyan;
+        }
 
         /// <summary>
         /// Updates this chunk/BoundsOctreeNode.
@@ -74,13 +89,22 @@ namespace UnityVoxelPlanet
             OnUpdate(Vector3.Distance(cameraPosition, Position));
         }
 
-        public override Color GetDebugColor()
+        /// <summary>
+        /// Gets voxel block size.
+        /// </summary>
+        /// <returns>The voxel block size.</returns>
+        public float GetVoxelSize()
         {
-            if (Voxels != null && Voxels.Length > 0)
-            {
-                return Color.green;
-            }
-            return Color.cyan;
+            return _voxelSize;
+        }
+
+        /// <summary>
+        /// Gets reference to VoxelMesh instance of this chunk.
+        /// </summary>
+        /// <returns>The VoxelMesh reference.</returns>
+        public VoxelMesh GetMesh()
+        {
+            return _voxelMesh;
         }
 
         // private
@@ -101,9 +125,17 @@ namespace UnityVoxelPlanet
         // private
         private void Generate()
         {
-            // TODO: generate voxels
+            if (Voxels == null)
+            {
+                Voxels = new byte[Size * Size * Size];
+            }
 
-            // TODO: create mesh
+            // generate voxels
+            VoxelGenerator.GenerateTempVoxels(Handler, this);
+
+            // create mesh
+            VoxelMesher.Current.CreateMesh(this, NeighborChunks);
+            
         }
 
         /// <summary>

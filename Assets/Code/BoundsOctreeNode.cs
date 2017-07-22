@@ -1,4 +1,5 @@
 ﻿
+using System;
 using UnityEngine;
 
 namespace UnityVoxelPlanet
@@ -27,9 +28,8 @@ namespace UnityVoxelPlanet
                 Debug.LogWarning("Cannot populate! Node is already populated or not cleaned properly.");
                 return;
             }
-
-            // TODO: calculate positions
-
+            
+            throw new NotImplementedException();
         }
 
         public void Depopulate()
@@ -40,6 +40,7 @@ namespace UnityVoxelPlanet
                 return;
             }
 
+            throw new NotImplementedException();
         }
 
         public void DrawDebug()
@@ -77,6 +78,8 @@ namespace UnityVoxelPlanet
 
         public T[] ChildNodes { get; set; }
         
+        public T[] NeighborChunks { get; set; }
+
         public abstract Vector3 Position { get; set; }
 
         public abstract Bounds Bounds { get; set; }
