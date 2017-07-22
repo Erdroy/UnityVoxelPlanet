@@ -20,6 +20,7 @@ namespace UnityVoxelPlanet
         {
             Voxels = new byte[Size * Size * Size];
 
+            // TODO: generate voxels
             // TODO: create mesh
         }
 
@@ -53,7 +54,24 @@ namespace UnityVoxelPlanet
         /// <param name="cameraPosition"></param>
         public void Update(Vector3 cameraPosition)
         {
-            
+            if (IsPopulated)
+            {
+                // forward to children
+                foreach (var chunk in ChildNodes)
+                {
+                    chunk.Update(cameraPosition);
+                }
+            }
+
+            // call OnUpdate
+            OnUpdate(Vector3.Distance(cameraPosition, Position));
+        }
+
+        // private
+        private void OnUpdate(float distance)
+        {
+            // check if we need to populate or depopulate
+
         }
 
         /// <summary>

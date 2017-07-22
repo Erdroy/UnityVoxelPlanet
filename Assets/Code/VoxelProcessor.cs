@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace UnityVoxelPlanet
@@ -9,8 +11,17 @@ namespace UnityVoxelPlanet
     /// </summary>
     public static class VoxelProcessor
     {
+        private struct QueueEntry
+        {
+            public Action Processor { get; set; }
+            public Action Done { get; set; }
+        }
+
         private static Thread[] _workerThreads;
         private static bool _isRunning;
+
+        private static readonly Queue<QueueEntry> ChunkProcessQueue = new Queue<QueueEntry>();
+        private static readonly Queue<Action> OnDone = new Queue<Action>();
 
         /// <summary>
         /// Initializes the VoxelProcessor.
@@ -37,7 +48,30 @@ namespace UnityVoxelPlanet
         /// </summary>
         public static void Dispatch()
         {
-            
+            lock (OnDone)
+            {
+                foreach (var done in OnDone)
+                {
+                    done();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enqueue the chunk processor for processing.
+        /// </summary>
+        /// <param name="chunkProcessor">The processor method.</param>
+        /// <param name="onDone">The method which will be called when the chunk ends processing.</param>
+        public static void Enqueue(Action chunkProcessor, Action onDone)
+        {
+            lock (ChunkProcessQueue)
+            {
+                ChunkProcessQueue.Enqueue(new QueueEntry
+                {
+                    Done = onDone,
+                    Processor = chunkProcessor
+                });
+            }
         }
 
         /// <summary>
@@ -58,10 +92,22 @@ namespace UnityVoxelPlanet
         {
             while (_isRunning)
             {
+                QueueEntry entry;
+                lock (ChunkProcessQueue)
+                {
+                    if (ChunkProcessQueue.Count == 0)
+                    {
+                        // sleep, no work currently
+                        Thread.Sleep(10);
+                        continue;
+                    }
 
+                    entry = ChunkProcessQueue.Dequeue();
+                }
 
-                // sleep, no work currently
-                Thread.Sleep(10);
+                entry.Processor();
+
+                lock (OnDone) OnDone.Enqueue(entry.Done);
             }
         }
     }
