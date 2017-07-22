@@ -24,50 +24,53 @@ namespace UnityVoxelPlanet
 
         public void Populate()
         {
+            if (Bounds.size.x * 0.5f <= 16.0f)
+                return;
+
             if (IsPopulated)
             {
                 Debug.LogWarning("Cannot populate! Node is already populated or not cleaned properly.");
                 return;
             }
-            /*
-                        ChildNodes = new T[NodeChildCount];
 
-                         var size = Bounds.size * 0.5f;
+            ChildNodes = new T[NodeChildCount];
 
-                         for (var y = 0; y < 2; y++)
-                         {
-                             for (var x = 0; x < 2; x++)
-                             {
-                                 for (var z = 0; z < 2; z++)
-                                 {
-                                     var idx = z * 2 * 2 + y * 2 + x;
+            var size = Bounds.size * 0.5f;
 
-                                     ChildNodes[idx] = new T
-                                     {
-                                         Handler = Handler,
-                                         ParentNode = null
-                                     };
+            for (var y = 0; y < 2; y++)
+            {
+                for (var x = 0; x < 2; x++)
+                {
+                    for (var z = 0; z < 2; z++)
+                    {
+                        var idx = z * 2 * 2 + y * 2 + x;
 
-                                     var node = ChildNodes[idx];
-                                     node.Level = Level + 1;
+                        ChildNodes[idx] = new T
+                        {
+                            Handler = Handler,
+                            ParentNode = null
+                        };
 
-                                     var position = new MyVector3(x - 1, y - 1, z - 1);
+                        var node = ChildNodes[idx];
+                        node.Level = Level + 1;
 
-                                     position *= size;
-                                     position += (MyVector3)Position;
+                        var position = new MyVector3(x, y, z);
 
-                                     node.Position = position;
-                                     node.Bounds = new Bounds
-                                     {
-                                         min = position,
-                                         max = new Vector3(position.X + size.x, position.Y + size.y, position.Z + size.z)
-                                     };
+                        position *= size;
+                        position += (MyVector3)Position;
 
-                                     node.OnCreate();
-                                 }
-                             }
-                         }
-                         */
+                        node.Position = position;
+                        node.Bounds = new Bounds
+                        {
+                            min = position,
+                            max = new Vector3(position.X + size.x, position.Y + size.y, position.Z + size.z)
+                        };
+                        
+                        node.OnCreate();
+                    }
+                }
+            }
+
             OnPopulated();
         }
 

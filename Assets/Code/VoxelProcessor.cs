@@ -82,11 +82,6 @@ namespace UnityVoxelPlanet
         public static void Shutdown()
         {
             _isRunning = false;
-
-            /*foreach (var thread in _workerThreads)
-            {
-                thread.Interrupt();
-            }*/
             _workerThreads = null;
 
             Debug.Log("Shutdown all worker threads.");

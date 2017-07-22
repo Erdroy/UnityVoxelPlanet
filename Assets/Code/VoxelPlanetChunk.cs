@@ -21,7 +21,7 @@ namespace UnityVoxelPlanet
         private GameObject _chunkObject;
         private bool _hasBlocks;
 
-        private static bool _populated = false;
+        private static bool _populated; // temporary
 
         /// <summary>
         /// Called when this chunk is created.
@@ -46,12 +46,12 @@ namespace UnityVoxelPlanet
         {
             // TODO: call when the populating is finished (all chunks have been generated)
 
-            /*if (_chunkObject)
+            if (_chunkObject)
             {
                 Object.Destroy(_chunkObject);
             }
 
-            _voxelMesh.Dispose();*/
+            _voxelMesh.Dispose();
         }
 
         /// <summary>
@@ -174,13 +174,13 @@ namespace UnityVoxelPlanet
         {
             if (_voxelMesh == null)
                 _voxelMesh = new VoxelMesh();
-
+            
             VoxelProcessor.Enqueue(Generate, OnGenerated);
 
             // calculate voxel size
             _voxelSize = Bounds.size.x / Size;
 
-            _chunkObject = new GameObject("<chunk>");
+            _chunkObject = new GameObject("<chunk "+ _voxelSize + ">");
             _chunkObject.transform.parent = Handler.transform;
             _chunkObject.transform.position = Position;
         }
@@ -211,7 +211,7 @@ namespace UnityVoxelPlanet
             /* if (!IsPopulated)
              {
                  // try populate
-                 if (distance < (Bounds.size.x * 2.0f) && bndDistCtr > camDistCtr)
+                 if (distance < (Bounds.size.x * 2.0f) && bndDistCtr < camDistCtr)
                  {
                      Populate();
                  }
