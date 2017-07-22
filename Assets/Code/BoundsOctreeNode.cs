@@ -18,6 +18,8 @@ namespace UnityVoxelPlanet
 
         public abstract void OnDepopulated();
 
+        public abstract Color GetDebugColor();
+
         public void Populate()
         {
             if (IsPopulated)
@@ -50,6 +52,8 @@ namespace UnityVoxelPlanet
                 }
                 return;
             }
+
+            Gizmos.color = GetDebugColor();
 
             // draw bounds
             Gizmos.DrawWireCube(Bounds.center, Bounds.size);

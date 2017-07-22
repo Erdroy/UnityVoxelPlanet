@@ -13,15 +13,20 @@ namespace UnityVoxelPlanet
         /// </summary>
         public const int Size = 16; // 16x16x16 voxels.
 
+        // private
+        private VoxelMesh _voxelMesh;
+
         /// <summary>
         /// Called when this chunk is created.
         /// </summary>
         public override void OnCreate()
         {
             Voxels = new byte[Size * Size * Size];
+            
+            if(_voxelMesh == null)
+                _voxelMesh = new VoxelMesh();
 
-            // TODO: generate voxels
-            // TODO: create mesh
+            VoxelProcessor.Enqueue(Generate, UploadMesh);
         }
 
         /// <summary>
@@ -45,6 +50,8 @@ namespace UnityVoxelPlanet
         /// </summary>
         public override void OnDepopulated()
         {
+            // all child nodes deleted
+
             // TODO: create mesh
         }
 
@@ -67,11 +74,36 @@ namespace UnityVoxelPlanet
             OnUpdate(Vector3.Distance(cameraPosition, Position));
         }
 
+        public override Color GetDebugColor()
+        {
+            if (Voxels != null && Voxels.Length > 0)
+            {
+                return Color.green;
+            }
+            return Color.cyan;
+        }
+
         // private
         private void OnUpdate(float distance)
         {
             // check if we need to populate or depopulate
 
+            // TODO: manage populate/depopulate
+        }
+
+        // private
+        private void UploadMesh()
+        {
+            // upload mesh
+            _voxelMesh.Upload();
+        }
+
+        // private
+        private void Generate()
+        {
+            // TODO: generate voxels
+
+            // TODO: create mesh
         }
 
         /// <summary>
