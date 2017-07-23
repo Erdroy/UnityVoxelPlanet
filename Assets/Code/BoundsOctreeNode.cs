@@ -19,7 +19,7 @@ namespace UnityVoxelPlanet
         public abstract void OnPopulated();
 
         public abstract void OnDepopulated();
-
+        
         public abstract Color GetDebugColor();
 
         public void Populate()
@@ -48,7 +48,7 @@ namespace UnityVoxelPlanet
                         ChildNodes[idx] = new T
                         {
                             Handler = Handler,
-                            ParentNode = null
+                            ParentNode = this
                         };
 
                         var node = ChildNodes[idx];
@@ -141,7 +141,7 @@ namespace UnityVoxelPlanet
 
         public int Level { get; set; }
 
-        public T ParentNode { get; set; }
+        public BoundsOctreeNode<T, TH> ParentNode { get; set; }
 
         public T[] ChildNodes { get; set; }
         

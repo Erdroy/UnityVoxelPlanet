@@ -20,7 +20,7 @@ namespace UnityVoxelPlanet
         private float _voxelSize;
         private GameObject _chunkObject;
         private bool _hasBlocks;
-
+        
         /// <summary>
         /// Called when this chunk is created.
         /// </summary>
@@ -228,7 +228,7 @@ namespace UnityVoxelPlanet
                 Debug.Log("No chunk object");
                 return;
             }
-
+            
             if (!_hasBlocks)
                 return;
 
