@@ -43,7 +43,6 @@ namespace UnityVoxelPlanet
                         node.Level = 0;
 
                         var position = new MyVector3(x - initialChildCount / 2, y - initialChildCount / 2, z - initialChildCount / 2);
-
                         position *= BaseNodeSize;
                         node.Position = Int3.FromVector3(position);
                         node.Bounds = new Bounds
