@@ -87,6 +87,7 @@
     <Compile Include="Assets\Code\BoundsOctreeNode.cs" />
     <Compile Include="Assets\Code\CameraController.cs" />
     <Compile Include="Assets\Code\IBoundsOctreeNode.cs" />
+    <Compile Include="Assets\Code\Int3.cs" />
     <Compile Include="Assets\Code\Meshers\VoxelMesherDefault.cs" />
     <Compile Include="Assets\Code\VoxelGenerator.cs" />
     <Compile Include="Assets\Code\VoxelManager.cs" />

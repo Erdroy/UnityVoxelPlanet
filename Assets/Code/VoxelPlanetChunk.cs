@@ -184,7 +184,7 @@ namespace UnityVoxelPlanet
 
             _chunkObject = new GameObject("<chunk " + _voxelSize + ">");
             _chunkObject.transform.parent = Handler.transform;
-            _chunkObject.transform.position = Position;
+            _chunkObject.transform.position = Position.ToVector3();
 
             // enqueue to generate
             VoxelProcessor.Enqueue(Generate, OnGenerated);
@@ -200,14 +200,11 @@ namespace UnityVoxelPlanet
             // get proper distance to the camera
             var boundsPoint = Bounds.ClosestPoint(cameraPosition);
             var distance = Vector3.Distance(boundsPoint, cameraPosition);
-
-            var camDistCtr = Vector3.Distance(Handler.Position, cameraPosition);
-            var bndDistCtr = Vector3.Distance(Handler.Position, Bounds.center);
-
+            
             if (!IsPopulated && CanPopulate)
             {
                 // try populate
-                if (distance < Bounds.size.x * 2.0f && bndDistCtr < camDistCtr)
+                if (distance < Bounds.size.x * 2.0f)
                 {
                     Populate();
                 }
@@ -216,7 +213,7 @@ namespace UnityVoxelPlanet
             if (IsPopulated && CanDepopulate)
             {
                 // try depopulate
-                if (distance > Bounds.size.x * 2.25f + Size * 4.0f && bndDistCtr < camDistCtr)
+                if (distance > Bounds.size.x * 2.25f + Size * 4.0f)
                 {
                     Depopulate();
                 }
@@ -276,7 +273,7 @@ namespace UnityVoxelPlanet
         /// </summary>
         public byte[] Voxels { get; private set; }
 
-        public override Vector3 Position { get; set; }
+        public override Int3 Position { get; set; }
 
         public override Bounds Bounds { get; set; }
     }

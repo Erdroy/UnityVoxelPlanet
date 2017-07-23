@@ -57,9 +57,9 @@ namespace UnityVoxelPlanet
                         var position = new MyVector3(x, y, z);
 
                         position *= size;
-                        position += (MyVector3)Position;
+                        position += Position.ToVector3();
 
-                        node.Position = position;
+                        node.Position = Int3.FromVector3(position);
                         node.Bounds = new Bounds
                         {
                             min = position,
@@ -147,7 +147,7 @@ namespace UnityVoxelPlanet
         
         public T[] NeighborChunks { get; set; }
 
-        public abstract Vector3 Position { get; set; }
+        public abstract Int3 Position { get; set; }
 
         public abstract Bounds Bounds { get; set; }
     }

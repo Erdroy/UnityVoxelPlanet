@@ -1,4 +1,5 @@
 ﻿
+using MyHalp.MyMath;
 using UnityEngine;
 
 namespace UnityVoxelPlanet
@@ -19,7 +20,7 @@ namespace UnityVoxelPlanet
 
             var planetCenter = planet.Position;
             var planetRadius = planet.Radius;
-            var chunkPosition = chunk.Position;
+            var chunkPosition = chunk.Position.ToVector3();
 
             var voxelSize = chunk.GetVoxelSize();
 
@@ -33,7 +34,7 @@ namespace UnityVoxelPlanet
                     {
                         // calculate all needed data
                         var idx = z * width * width + y * width + x;
-                        var blockCenter = chunkPosition + new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) * voxelSize;
+                        var blockCenter = chunkPosition + new MyVector3(x + 0.5f, y + 0.5f, z + 0.5f) * voxelSize;
                         var distanceToCenter = Vector3.Distance(planetCenter, blockCenter);
 
                         // if block is placed higher than planet radius then it is 0 (air), else the voxel is 1 (block, something)
