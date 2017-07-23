@@ -54,7 +54,14 @@ namespace UnityVoxelPlanet
                 while (OnDone.Count > 0)
                 {
                     var action = OnDone.Dequeue();
-                    action();
+                    try
+                    {
+                        action();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogException(ex);
+                    }
                 }
             }
         }
@@ -90,24 +97,37 @@ namespace UnityVoxelPlanet
         // private
         private static void VoxelProcessorWorker()
         {
-            while (_isRunning)
+            try
             {
-                QueueEntry entry;
-                lock (ChunkProcessQueue)
+                while (_isRunning)
                 {
-                    if (ChunkProcessQueue.Count == 0)
+                    QueueEntry? entry = null;
+                    bool hasEntry;
+
+                    lock (ChunkProcessQueue)
                     {
-                        // sleep, no work currently
+                        hasEntry = ChunkProcessQueue.Count > 0;
+
+                        if (hasEntry)
+                        {
+                            entry = ChunkProcessQueue.Dequeue();
+                        }
+                    }
+
+                    if (!hasEntry)
+                    {
                         Thread.Sleep(10);
                         continue;
                     }
 
-                    entry = ChunkProcessQueue.Dequeue();
+                    entry.Value.Processor();
+
+                    lock (OnDone) OnDone.Enqueue(entry.Value.Done);
                 }
-
-                entry.Processor();
-
-                lock (OnDone) OnDone.Enqueue(entry.Done);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
             }
         }
     }

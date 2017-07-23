@@ -1,5 +1,5 @@
 ﻿
-using System;
+using System.Linq;
 using MyHalp.MyMath;
 using UnityEngine;
 
@@ -24,7 +24,7 @@ namespace UnityVoxelPlanet
 
         public void Populate()
         {
-            if (Bounds.size.x * 0.5f <= 16.0f)
+            if (!CanPopulate)
                 return;
 
             if (IsPopulated)
@@ -71,20 +71,32 @@ namespace UnityVoxelPlanet
                 }
             }
 
+            // TODO: update neighs
+
             OnPopulated();
         }
 
         public void Depopulate()
         {
+            if (!CanDepopulate)
+                return;
+
             if (!IsPopulated)
             {
                 Debug.LogWarning("Cannot depopulate! Node is not populated.");
                 return;
             }
 
-            throw new NotImplementedException();
-        }
+            foreach (var node in ChildNodes)
+            {
+                node.OnDestroy();
+            }
 
+            ChildNodes = null;
+
+            OnDepopulated();
+        }
+        
         public void DrawDebug()
         {
             if (IsPopulated)
@@ -105,6 +117,19 @@ namespace UnityVoxelPlanet
         public static implicit operator bool(BoundsOctreeNode<T, TH> obj)
         {
             return obj != null;
+        }
+        
+        public bool CanPopulate
+        {
+            get { return Bounds.size.x * 0.5f > 16.0f; }
+        }
+
+        public bool CanDepopulate
+        {
+            get
+            {
+                return IsPopulated && ChildNodes.All(node => !node.IsPopulated);
+            }
         }
 
         public bool IsPopulated

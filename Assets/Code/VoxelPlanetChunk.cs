@@ -21,8 +21,6 @@ namespace UnityVoxelPlanet
         private GameObject _chunkObject;
         private bool _hasBlocks;
 
-        private static bool _populated; // temporary
-
         /// <summary>
         /// Called when this chunk is created.
         /// </summary>
@@ -36,7 +34,13 @@ namespace UnityVoxelPlanet
         /// </summary>
         public override void OnDestroy()
         {
-            Debug.Log("PlanetChunk destroyed. Level: " + Level);
+            if (_chunkObject)
+            {
+                Object.Destroy(_chunkObject);
+            }
+
+            _voxelMesh.Dispose();
+            Voxels = null;
         }
 
         /// <summary>
@@ -52,6 +56,7 @@ namespace UnityVoxelPlanet
             }
 
             _voxelMesh.Dispose();
+            Voxels = null;
         }
 
         /// <summary>
@@ -172,17 +177,17 @@ namespace UnityVoxelPlanet
         // private
         private void CreateMesh()
         {
-            if (_voxelMesh == null)
-                _voxelMesh = new VoxelMesh();
-            
-            VoxelProcessor.Enqueue(Generate, OnGenerated);
+            _voxelMesh = new VoxelMesh();
 
             // calculate voxel size
             _voxelSize = Bounds.size.x / Size;
 
-            _chunkObject = new GameObject("<chunk "+ _voxelSize + ">");
+            _chunkObject = new GameObject("<chunk " + _voxelSize + ">");
             _chunkObject.transform.parent = Handler.transform;
             _chunkObject.transform.position = Position;
+
+            // enqueue to generate
+            VoxelProcessor.Enqueue(Generate, OnGenerated);
         }
 
         // private
@@ -199,28 +204,37 @@ namespace UnityVoxelPlanet
             var camDistCtr = Vector3.Distance(Handler.Position, cameraPosition);
             var bndDistCtr = Vector3.Distance(Handler.Position, Bounds.center);
 
-            if (_hasBlocks)
+            if (!IsPopulated && CanPopulate)
             {
-                if (Input.GetKeyDown(KeyCode.Q) && !_populated)
+                // try populate
+                if (distance < Bounds.size.x * 2.0f && bndDistCtr < camDistCtr)
                 {
-                    _populated = true;
                     Populate();
                 }
             }
 
-            /* if (!IsPopulated)
-             {
-                 // try populate
-                 if (distance < (Bounds.size.x * 2.0f) && bndDistCtr < camDistCtr)
-                 {
-                     Populate();
-                 }
-             }*/
+            if (IsPopulated && CanDepopulate)
+            {
+                // try depopulate
+                if (distance > Bounds.size.x * 2.25f + Size * 4.0f && bndDistCtr < camDistCtr)
+                {
+                    Depopulate();
+                }
+            }
         }
 
         // private
         private void OnGenerated()
         {
+            if (_chunkObject == null)
+            {
+                Debug.Log("No chunk object");
+                return;
+            }
+
+            if (!_hasBlocks)
+                return;
+
             // upload mesh
             _voxelMesh.Upload();
 
@@ -231,6 +245,11 @@ namespace UnityVoxelPlanet
 
             var mr = _chunkObject.AddComponent<MeshRenderer>();
             mr.material = Handler.DefaultMaterial;
+
+            if (mesh == null)
+            {
+                Debug.Log("Mesh is null for " + _voxelSize);
+            }
         }
 
         // private
@@ -248,7 +267,7 @@ namespace UnityVoxelPlanet
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex);
+                Debug.LogException(ex);
             }
         }
 

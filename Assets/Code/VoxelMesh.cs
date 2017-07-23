@@ -53,6 +53,9 @@ namespace UnityVoxelPlanet
             _mesh.RecalculateNormals();
 
             _mesh.UploadMeshData(true);
+
+            Positions = new List<Vector3>();
+            Triangles = new List<int>();
         }
 
         /// <summary>

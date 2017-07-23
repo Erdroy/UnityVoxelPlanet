@@ -14,6 +14,9 @@ namespace UnityVoxelPlanet
         {
             const int width = VoxelPlanetChunk.Size;
 
+            if (chunk.Voxels == null)
+                return false;
+
             var planetCenter = planet.Position;
             var planetRadius = planet.Radius;
             var chunkPosition = chunk.Position;

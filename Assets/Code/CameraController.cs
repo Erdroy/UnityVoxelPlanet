@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using MyHalp;
 using UnityEngine;
 
@@ -27,6 +28,13 @@ namespace UnityVoxelPlanet
         private float _rotationX;
         private float _rotationY;
 
+        private float _dtSum;
+        private int _frames;
+        private float _fps;
+
+        private float _maxDt;
+        private float _currMaxDt;
+
         private Quaternion _initialQ;
         
         public CameraController()
@@ -44,6 +52,9 @@ namespace UnityVoxelPlanet
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+
+            Application.targetFrameRate = int.MaxValue;
+            QualitySettings.vSyncCount = 0;
         }
 
         // override `OnTick`
@@ -51,6 +62,22 @@ namespace UnityVoxelPlanet
         {
             UpdateMovement();
             UpdateLook();
+            
+            if (Time.deltaTime > _maxDt)
+                _maxDt = Time.deltaTime;
+
+            if (_dtSum >= 1.0f)
+            {
+                _fps = _frames;
+                _currMaxDt = _maxDt;
+
+                _maxDt = 0;
+                _frames = 0;
+                _dtSum = 0.0f;
+            }
+
+            _dtSum += Time.deltaTime;
+            _frames++;
         }
 
         // private
@@ -80,8 +107,8 @@ namespace UnityVoxelPlanet
 
             var dir = Vector3.zero;
 
-            dir += transform.forward * axisV;
-            dir += transform.right * axisH;
+            dir += Camera.forward * axisV;
+            dir += Camera.right * axisH;
 
             if (Input.GetKey(KeyCode.Space))
                 dir += GetNormal();
@@ -101,7 +128,15 @@ namespace UnityVoxelPlanet
 
         private void OnGUI()
         {
+            var mem = Process.GetCurrentProcess().WorkingSet64;
+
+            GUILayout.BeginVertical("box");
+            GUILayout.Label("-- info --");
+            GUILayout.Label("FPS: " + _fps + " max: " + _currMaxDt * 1000.0f + "ms");
             GUILayout.Label("Altitude: " + GetAltitude().ToString("f1"));
+            GUILayout.Label("Planet radius: " + GetOrbitingPlanet().Radius);
+            GUILayout.Label("RAM usage: " + mem);
+            GUILayout.EndVertical();
         }
 
         private void OnDrawGizmos()
