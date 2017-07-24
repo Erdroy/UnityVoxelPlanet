@@ -24,6 +24,8 @@ namespace UnityVoxelPlanet
 
         public bool DrawDebug = true;
 
+        public Color DebugColor;
+
         // private
         private BoundsOctree<VoxelPlanetChunk, VoxelPlanet> _octree;
         
@@ -70,6 +72,8 @@ namespace UnityVoxelPlanet
         {
             if (!Application.isPlaying || !DrawDebug)
                 return;
+
+            Gizmos.color = DebugColor;
 
             _octree.DrawDebug();
         }

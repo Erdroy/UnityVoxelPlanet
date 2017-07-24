@@ -19,8 +19,6 @@ namespace UnityVoxelPlanet
         public abstract void OnPopulated();
 
         public abstract void OnDepopulated();
-        
-        public abstract Color GetDebugColor();
 
         public void Populate()
         {
@@ -32,6 +30,8 @@ namespace UnityVoxelPlanet
                 Debug.LogWarning("Cannot populate! Node is already populated or not cleaned properly.");
                 return;
             }
+
+            IsPopulated = true;
 
             ChildNodes = new T[NodeChildCount];
 
@@ -48,7 +48,7 @@ namespace UnityVoxelPlanet
                         ChildNodes[idx] = new T
                         {
                             Handler = Handler,
-                            ParentNode = this
+                            ParentNode = (T) this
                         };
 
                         var node = ChildNodes[idx];
@@ -86,20 +86,15 @@ namespace UnityVoxelPlanet
                 Debug.LogWarning("Cannot depopulate! Node is not populated.");
                 return;
             }
-
-            foreach (var node in ChildNodes)
-            {
-                node.OnDestroy();
-            }
-
-            ChildNodes = null;
-
+            
+            IsPopulated = false;
+            
             OnDepopulated();
         }
         
         public void DrawDebug()
         {
-            if (IsPopulated)
+            if (IsPopulated && ChildNodes != null)
             {
                 foreach (var child in ChildNodes)
                 {
@@ -107,9 +102,7 @@ namespace UnityVoxelPlanet
                 }
                 return;
             }
-
-            Gizmos.color = GetDebugColor();
-
+            
             // draw bounds
             Gizmos.DrawWireCube(Bounds.center, Bounds.size);
         }
@@ -128,20 +121,20 @@ namespace UnityVoxelPlanet
         {
             get
             {
+                if (ChildNodes == null)
+                    return false;
+
                 return IsPopulated && ChildNodes.All(node => !node.IsPopulated);
             }
         }
 
-        public bool IsPopulated
-        {
-            get { return ChildNodes != null && ChildNodes.Length > 0; }
-        }
+        public bool IsPopulated { get; set; }
 
         public TH Handler { get; set; }
 
         public int Level { get; set; }
 
-        public BoundsOctreeNode<T, TH> ParentNode { get; set; }
+        public T ParentNode { get; set; }
 
         public T[] ChildNodes { get; set; }
         
@@ -152,3 +145,4 @@ namespace UnityVoxelPlanet
         public abstract Bounds Bounds { get; set; }
     }
 }
+

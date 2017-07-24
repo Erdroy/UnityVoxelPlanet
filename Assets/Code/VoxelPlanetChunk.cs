@@ -20,6 +20,8 @@ namespace UnityVoxelPlanet
         private float _voxelSize;
         private GameObject _chunkObject;
         private bool _hasBlocks;
+
+        private int _generatedChunks;
         
         /// <summary>
         /// Called when this chunk is created.
@@ -50,13 +52,7 @@ namespace UnityVoxelPlanet
         {
             // TODO: call when the populating is finished (all chunks have been generated)
 
-            if (_chunkObject)
-            {
-                Object.Destroy(_chunkObject);
-            }
-
-            _voxelMesh.Dispose();
-            Voxels = null;
+            
         }
 
         /// <summary>
@@ -69,22 +65,6 @@ namespace UnityVoxelPlanet
         }
         
         /// <summary>
-        /// Gets octree node debug color.
-        /// </summary>
-        /// <returns>The color.</returns>
-        public override Color GetDebugColor()
-        {
-            if (!_hasBlocks)
-                return new Color(0.0f, 0.0f, 0.0f, 0.0f);
-
-            if (Voxels != null && Voxels.Length > 0)
-            {
-                return Color.green;
-            }
-            return Color.cyan;
-        }
-
-        /// <summary>
         /// Updates this chunk/BoundsOctreeNode.
         /// </summary>
         /// <param name="cameraPosition"></param>
@@ -93,7 +73,7 @@ namespace UnityVoxelPlanet
             if (!_hasBlocks)
                 return;
 
-            if (IsPopulated)
+            if (IsPopulated && ChildNodes != null)
             {
                 // forward to children
                 foreach (var chunk in ChildNodes)
@@ -175,6 +155,31 @@ namespace UnityVoxelPlanet
         }
 
         // private
+        private void OnChunkGenerated()
+        {
+            _generatedChunks++;
+
+            if (_generatedChunks + 1 >= NodeChildCount)
+            {
+                OnChunksCreated();
+                _generatedChunks = 0;
+            }
+        }
+
+        // private
+        private void OnChunksCreated()
+        {
+            // called when all chunks done generating
+            if (_chunkObject)
+            {
+                Object.Destroy(_chunkObject);
+            }
+
+            _voxelMesh.Dispose();
+            Voxels = null;
+        }
+
+        // private
         private void CreateMesh()
         {
             _voxelMesh = new VoxelMesh();
@@ -221,8 +226,28 @@ namespace UnityVoxelPlanet
         }
 
         // private
+        private void DestroyChildNodes()
+        {
+            foreach (var node in ChildNodes)
+            {
+                node.OnDestroy();
+            }
+
+            ChildNodes = null;
+        }
+
+        // private
         private void OnGenerated()
         {
+            if (ParentNode != null)
+                ParentNode.OnChunkGenerated();
+
+            // check child nodes, if there are nodes, destroy!
+            if (ChildNodes != null)
+            {
+                DestroyChildNodes();
+            }
+
             if (_chunkObject == null)
             {
                 Debug.Log("No chunk object");
