@@ -1,7 +1,7 @@
 # UnityVoxelPlanet
 Erdroy's Voxel Planet implemented in Unity 5
 
-It is not finished anyway, but someone maybe can find it useful.
+It is not finished anyway, needs ton of optimizations, but someone maybe can find it useful.
 ***Do whatever you want with it, it's free.***
 
 Video:
